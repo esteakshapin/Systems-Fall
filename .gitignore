@@ -14,3 +14,7 @@
 *a.out
 *.out
 *.o
+
+#ignore ds file
+.DS_Store
+
