@@ -1,0 +1,11 @@
+# Ignore all
+*
+
+# Ignore a.out
+*a.out
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
