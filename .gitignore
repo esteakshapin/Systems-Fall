@@ -10,11 +10,12 @@
 #Unignore makefile
 !makefile
 
-# Ignore a.out
+# Ignore executable and o files
 *a.out
 *.out
-*.o
+main.o
 
 #ignore ds file
 .DS_Store
+*.DS_Store
 
