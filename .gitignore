@@ -7,6 +7,14 @@
 # Unignore all dirs
 !*/
 
-# Ignore a.out
-*.out
+#Unignore makefile
+!makefile
+
+# Ignore executable and o files
 *a.out
+*.out
+main.o
+
+#ignore ds file
+.DS_Store
+*.DS_Store
