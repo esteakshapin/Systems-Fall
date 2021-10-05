@@ -6,3 +6,7 @@ main.o: main.c
 
 run:
 	make && ./a.out
+
+clean:
+	rm *.o
+	rm *~
