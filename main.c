@@ -1,24 +1,59 @@
 #include <stdio.h>
-/* assignment1.c:  My first C program on a Linux */
+#include <time.h>
+
+#define ARR_LENGTH 10
+
+#define BACKWARD_LENGTH_EQUATION (ARR_LENGTH - (a + 1))
+
 int main(void)
 {
 
-    int num1 = 1;
-    int num2 = 2;
+    //1
+    int arr[ARR_LENGTH];
 
-    long longNum = 12354;
+    //2
+    arr[0] = 0;
 
-    float floatNum = 12345.678;
+    //3
+    srand(time(NULL));
+    int a;
+    for (a = 1; a < ARR_LENGTH; a++)
+    {
+        arr[a] = rand();
+    }
 
-    double doubleNum = 2416.1514;
+    //4
+    printf("\n arr = {");
 
-    char testChar = 'E';
+    for (a = 0; a < ARR_LENGTH; a++)
+    {
+        printf("%d, ", arr[a]);
+    }
 
-    char firstName[] = "Esteak";
-    char lastName[] = "Shapin";
+    printf("} \n");
 
-    printf("Hello My name is %s %s! The numbers of the day are: \n %d \n %d \n %ld \n %f \n %lf \n and last but not least my favorite letter %c",
-           firstName, lastName, num1, num2, longNum, floatNum, doubleNum, testChar);
+    //5
+    int arr2[ARR_LENGTH];
+
+    //6
+    int *arrp = arr;
+    int *arr2p = arr2;
+
+    //7
+    for (a = 0; a < ARR_LENGTH / 2; a++)
+    {
+        arr2p[a] = arrp[BACKWARD_LENGTH_EQUATION];
+        arr2p[BACKWARD_LENGTH_EQUATION] = arrp[a];
+    }
+
+    printf("\n arr2 = {");
+
+    for (a = 0; a < ARR_LENGTH; a++)
+    {
+        printf("%d, ", arr2[a]);
+    }
+
+    printf("} \n");
 
     return 0;
 }
