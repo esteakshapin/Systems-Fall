@@ -13,7 +13,7 @@
 # Ignore executable and o files
 *a.out
 *.out
-main.o
+*.o
 
 #ignore ds file
 .DS_Store
