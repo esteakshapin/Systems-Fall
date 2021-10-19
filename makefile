@@ -1,11 +1,8 @@
-all: main.o mystring.o
-	gcc -o a.out main.o mystring.o
+all: main.o
+	gcc -o a.out main.o
 
-main.o: main.c mystring.h
+main.o: main.c
 	gcc -c main.c
-
-mystring.o: mystring.c mystring.h
-	gcc -c mystring.c
 
 run:
 	make && ./a.out
