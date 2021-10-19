@@ -1,5 +1,5 @@
 // code extracted from https://www.dreamincode.net/forums/topic/127035-random-name-generator/
-// written by NickDMax
+// written by NickDMax - Modified by Esteak Shapin
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,8 +36,12 @@ const char NameStems[][10] = {
 
 //The return type is void because we use a pointer to the array holding
 // the characters of the name.
-void NameGen(char *PlayerName)
+char *NameGen()
 {
+    char *PlayerName;
+
+    PlayerName = malloc(21 * sizeof(char));
+
     PlayerName[0] = 0; //initialize the string to "" (zero length string).
     //add the prefix...
     strcat(PlayerName, NamePrefix[(rand() % 7)]);
@@ -47,5 +51,5 @@ void NameGen(char *PlayerName)
     strcat(PlayerName, NameSuffix[(rand() % 16)]);
     //Make the first letter capital...
     PlayerName[0] = toupper(PlayerName[0]);
-    return;
+    return PlayerName;
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "namegen.h"
 
 struct teacher
@@ -11,7 +12,7 @@ struct teacher
 
 void printTeacher(struct teacher *teacher)
 {
-    printf("%s is a grade %d teacher who currently teaches %d classes.", teacher->name, teacher->grade, teacher->numberOfClasses);
+    printf("%s is a grade %d teacher who currently teaches %d classes. \n", teacher->name, teacher->grade, teacher->numberOfClasses);
 }
 
 struct teacher *createTeacher(char *name, int grade, int numberOfClasses)
@@ -44,11 +45,24 @@ int main()
     //initializing random
     srand(time(NULL));
 
-    char firstTeacherName[21];
-    char secondTeacherName[21];
-    char thirdTeacherName[21];
+    char *s = NameGen();
 
-    struct teacher *firstTeacher = createTeacher(NameGen(firstTeacher), )
+    int counter = 0;
+    while (counter < 5)
+    {
+        struct teacher *t = createTeacher(NameGen(), (rand() % 12), (rand() % 6));
 
-        return 0;
+        //printing teacher
+        printTeacher(t);
+
+        //freeing teahce name heap memory
+        free(t->name);
+
+        //freeing teacher heap memory
+        free(t);
+
+        counter++;
+    }
+
+    return 0;
 }

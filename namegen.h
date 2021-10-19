@@ -1,1 +1,1 @@
-void NameGen(char *PlayerName);
+char *NameGen();
