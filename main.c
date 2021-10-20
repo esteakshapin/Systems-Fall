@@ -2,67 +2,46 @@
 #include <stdlib.h>
 #include <time.h>
 #include "namegen.h"
-
-struct teacher
-{
-    char *name;
-    int grade;
-    int numberOfClasses;
-};
-
-void printTeacher(struct teacher *teacher)
-{
-    printf("%s is a grade %d teacher who currently teaches %d classes. \n", teacher->name, teacher->grade, teacher->numberOfClasses);
-}
-
-struct teacher *createTeacher(char *name, int grade, int numberOfClasses)
-{
-    struct teacher *newTeacher;
-
-    newTeacher = malloc(sizeof(struct teacher));
-
-    newTeacher->name = name;
-    newTeacher->grade = grade;
-    newTeacher->numberOfClasses = numberOfClasses;
-
-    return newTeacher;
-}
+#include "teacher.h"
+#include "nodeList.h"
 
 int main()
 {
 
-    //creating 1st teacher
-    struct teacher *john = createTeacher("john", 5, 2);
-
-    //printng out first teacher
-    printTeacher(john);
-
-    //freeing first teacher
-    free(john);
-
-    //creting random teachers with random values
+    struct teacher *teacherList = NULL;
 
     //initializing random
     srand(time(NULL));
 
-    char *s = NameGen();
-
     int counter = 0;
+    struct teacher *t;
+    struct teacher *f;
+
     while (counter < 5)
     {
-        struct teacher *t = createTeacher(NameGen(), (rand() % 12), (rand() % 6));
+        t = createTeacher(NameGen(), (rand() % 12), (rand() % 6), NULL);
 
-        //printing teacher
-        printTeacher(t);
+        if (counter == 3)
+        {
+            f = t;
+        }
 
-        //freeing teahce name heap memory
-        free(t->name);
-
-        //freeing teacher heap memory
-        free(t);
+        //adding teacher to list
+        teacherList = insert_front(teacherList, t);
 
         counter++;
     }
+
+    //printing teachers
+    print_list(teacherList);
+
+    //testing removing node
+    teacherList = remove_node(teacherList, f); //removing 3rh node
+    print_list(teacherList);                   //printing new list
+
+    //testing free list
+    teacherList = free_list(teacherList);
+    print_list(teacherList);
 
     return 0;
 }
