@@ -1,6 +1,12 @@
-struct teacher *insert_front(struct teacher *teacherList, struct teacher *newTeacher);
-struct teacher *remove_node(struct teacher *teacherList, struct teacher *oldTeacher);
+struct song *insert_front(struct song *songList, struct song *newTeacher);
+struct song *remove_node(struct song *songList, struct song *oldTeacher);
 
-void print_list(struct teacher *teacherList);
+void print_list(struct song *songList);
 
-struct teacher *free_list(struct teacher *teacherList);
+struct song *free_list(struct song *songList);
+
+struct song *insert_in_order(struct song *songList, struct song *newSong);
+
+int songcmp(struct song *firstSong, struct song *secondSong);
+
+struct song *find_node(struct song *songList, char *artist, char *name, struct song *nextSong);

@@ -1,74 +1,163 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "teacher.h"
+#include "song.h"
+#include "nodeList.h"
 
-struct teacher *insert_front(struct teacher *teacherList, struct teacher *newTeacher)
+struct song *insert_front(struct song *songList, struct song *newSong)
 {
-    newTeacher->nextTeacher = teacherList;
-    return newTeacher;
+    newSong->nextSong = songList;
+    return newSong;
 }
 
-struct teacher *remove_node(struct teacher *teacherList, struct teacher *oldTeacher)
+struct song *insert_in_order(struct song *songList, struct song *newSong)
 {
-
-    struct teacher *prevTeacher = NULL;
-    struct teacher *currentTeacher = teacherList;
-
-    while (currentTeacher)
+    if (songList == NULL)
     {
-        printf("%s \n", teacherList->name);
-        printf("%s \n", currentTeacher->name);
-        printf("%s \n", oldTeacher->name);
-
-        if (strcmp(currentTeacher->name, oldTeacher->name) == 0 &&
-            currentTeacher->grade == oldTeacher->grade &&
-            currentTeacher->numberOfClasses == oldTeacher->numberOfClasses &&
-            currentTeacher->nextTeacher == oldTeacher->nextTeacher)
-        {
-            printf("removing \n");
-            printf("match \n");
-            if (prevTeacher)
-            {
-                prevTeacher->nextTeacher = currentTeacher->nextTeacher;
-            }
-            if (currentTeacher == teacherList) //removing the node if its in the beginning
-            {
-                teacherList = currentTeacher->nextTeacher;
-            }
-
-            free(currentTeacher);
-            return teacherList;
-        }
-        prevTeacher = currentTeacher;
-        currentTeacher = currentTeacher->nextTeacher;
+        return insert_front(songList, newSong);
     }
-    return teacherList;
+    struct song *temp = songList;
+
+    while (temp)
+    {
+        int comp = songcmp(newSong, temp);
+
+        if (comp < 0)
+        {
+
+            struct song *prevSong = find_node(songList, NULL, NULL, temp);
+
+            if (prevSong)
+            {
+                prevSong->nextSong = newSong;
+            }
+
+            newSong->nextSong = temp;
+
+            if (temp == songList)
+            {
+                songList = newSong;
+            }
+
+            return songList;
+        }
+
+        temp = temp->nextSong;
+    }
+
+    // adding song to the end of the list
+    struct song *lastNode = find_node(songList, NULL, NULL, temp);
+
+    lastNode->nextSong = newSong;
+
+    return songList;
 }
 
-void print_list(struct teacher *teacherList)
+struct song *remove_node(struct song *songList, struct song *oldSong)
 {
-    printf("[\n");
-    int n = 0;
-    while (teacherList)
+
+    struct song *prevSong = NULL;
+    struct song *currentSong = songList;
+
+    while (currentSong)
     {
-        printf("%d: \t", n);
-        printTeacher(teacherList);
-        teacherList = teacherList->nextTeacher;
+
+        if (strcmp(currentSong->name, oldSong->name) == 0 &&
+            strcmp(currentSong->artist, oldSong->artist) == 0 &&
+            currentSong->nextSong == oldSong->nextSong)
+        {
+            if (prevSong)
+            {
+                prevSong->nextSong = currentSong->nextSong;
+            }
+            if (currentSong == songList) //removing the node if its in the beginning
+            {
+                songList = currentSong->nextSong;
+            }
+
+            printf("removing ");
+            printSong(currentSong);
+            printf("\n");
+
+            print_list(songList);
+            free(currentSong);
+            return songList;
+        }
+        prevSong = currentSong;
+        currentSong = currentSong->nextSong;
+    }
+    return songList;
+}
+
+void print_list(struct song *songList)
+{
+    printf("[ ");
+    int n = 0;
+    while (songList)
+    {
+        printSong(songList);
+        printf(" | ");
+        songList = songList->nextSong;
         n++;
     }
-    printf("]\n");
+    printf(" ]\n");
 }
 
-struct teacher *free_list(struct teacher *teacherList)
+struct song *free_list(struct song *songList)
 {
-    struct teacher *temp;
-    while (teacherList)
+    struct song *temp;
+    while (songList)
     {
-        temp = teacherList->nextTeacher;
-        free(teacherList);
-        teacherList = temp;
+        temp = songList->nextSong;
+        free(songList);
+        songList = temp;
     }
 
-    return teacherList;
+    return songList;
+}
+
+struct song *find_node(struct song *songList, char *artist, char *name, struct song *nextSong)
+{
+    if (artist && name)
+    {
+        while (songList->nextSong)
+        {
+            if (!strcmp(songList->artist, artist) && !strcmp(songList->name, name))
+            {
+                return songList;
+            }
+
+            songList = songList->nextSong;
+        }
+
+        return NULL;
+    }
+
+    // return first song by an authur
+    if (artist)
+    {
+        while (songList->nextSong)
+        {
+            if (!strcmp(songList->artist, artist))
+            {
+                return songList;
+            }
+
+            songList = songList->nextSong;
+        }
+
+        return NULL;
+    }
+
+    while (songList)
+    {
+        if (songList->nextSong == nextSong)
+        {
+            return songList;
+        }
+
+        songList = songList->nextSong;
+    }
+
+    return NULL;
 }

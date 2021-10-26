@@ -1,17 +1,17 @@
-all: main.o namegen.o nodeList.o teacher.o
-	gcc -o a.out main.o namegen.o nodeList.o teacher.o
+all: main.o namegen.o nodeList.o song.o
+	gcc -o a.out main.o namegen.o nodeList.o song.o
 
-main.o: main.c namegen.h nodeList.h teacher.h
+main.o: main.c namegen.h nodeList.h 
 	gcc -c main.c
 
-nodeList.o: nodeList.c nodeList.h teacher.h
+nodeList.o: nodeList.c nodeList.h
 	gcc -c nodeList.c
-
-teacher.o: teacher.c teacher.h
-	gcc -c teacher.c
 
 namegen.o: namegen.c namegen.h
 	gcc -c namegen.c
+
+song.o: song.c song.h
+	gcc -c song.c
 
 run:
 	make && ./a.out
