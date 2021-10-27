@@ -53,39 +53,44 @@ struct song *insert_in_order(struct song *songList, struct song *newSong)
     return songList;
 }
 
-struct song *remove_node(struct song *songList, struct song *oldSong)
+struct song *remove_node(struct song *songList, char *artist, char *name, struct song *nextSong)
 {
 
     struct song *prevSong = NULL;
     struct song *currentSong = songList;
 
-    while (currentSong)
+    if (artist && name)
     {
-
-        if (strcmp(currentSong->name, oldSong->name) == 0 &&
-            strcmp(currentSong->artist, oldSong->artist) == 0 &&
-            currentSong->nextSong == oldSong->nextSong)
+        printf("removing [%s, %s]", artist, name);
+        printf("\n");
+        while (currentSong)
         {
-            if (prevSong)
-            {
-                prevSong->nextSong = currentSong->nextSong;
-            }
-            if (currentSong == songList) //removing the node if its in the beginning
-            {
-                songList = currentSong->nextSong;
-            }
 
-            printf("removing ");
-            printSong(currentSong);
-            printf("\n");
+            if (strcmp(currentSong->name, name) == 0 &&
+                strcmp(currentSong->artist, artist) == 0)
+            {
+                if (prevSong)
+                {
+                    prevSong->nextSong = currentSong->nextSong;
+                }
+                if (currentSong == songList) //removing the node if its in the beginning
+                {
+                    songList = currentSong->nextSong;
+                }
 
-            print_list(songList);
-            free(currentSong);
-            return songList;
+                printf("\t \t");
+                print_list(songList);
+                free(currentSong);
+                return songList;
+            }
+            prevSong = currentSong;
+            currentSong = currentSong->nextSong;
         }
-        prevSong = currentSong;
-        currentSong = currentSong->nextSong;
     }
+
+    printf("\t \t");
+    printf("{%s: %s} not found \n", artist, name);
+
     return songList;
 }
 
@@ -105,10 +110,15 @@ void print_list(struct song *songList)
 
 struct song *free_list(struct song *songList)
 {
+    printf("\n");
     struct song *temp;
     while (songList)
     {
         temp = songList->nextSong;
+        printf("\t freeing_node: ");
+        printSong(songList);
+        printf("\n");
+
         free(songList);
         songList = temp;
     }
@@ -160,4 +170,24 @@ struct song *find_node(struct song *songList, char *artist, char *name, struct s
     }
 
     return NULL;
+}
+
+struct song *get_random_node(struct song *songList)
+{
+    struct song *temp = songList;
+    int length = 0;
+    while (temp)
+    {
+        length++;
+        temp = temp->nextSong;
+    }
+
+    int nodeIndex = rand() % length;
+    while (nodeIndex)
+    {
+        songList = songList->nextSong;
+        nodeIndex--;
+    }
+
+    return songList;
 }

@@ -94,14 +94,34 @@ int main()
     //finding node
     printHeader("Testing find_node");
     testFind(songList, findNode->artist, findNode->name);
+    printf("\n");
+    printTab();
     testFind(songList, "dasdasd", "dasdasd"); //should return not found
 
+    printHeader("Testing finding first song by author");
+    testFind(songList, findNode->artist, NULL);
+
+    printHeader("Testing random node");
+    int i;
+    for (i = 0; i < 4; i++)
+    {
+        printSong(get_random_node(songList));
+        printf("\n\t");
+    }
+
+    printf("\n");
+
     // //testing removing node
-    songList = remove_node(songList, findNode); //removing test node
-    print_list(songList);                       //printing new list
+    printHeader("Testing removing node");
+    songList = remove_node(songList, findNode->artist, findNode->name, NULL); //removing test node
+
+    printTab();
+    songList = remove_node(songList, "adasd", "Asdasd", NULL); //should not remove anything
 
     // //testing free list
+    printHeader("Testing free_list");
     songList = free_list(songList);
+    printf("list after free_list: \n");
     print_list(songList);
 
     return 0;
