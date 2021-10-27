@@ -111,6 +111,22 @@ int main()
 
     printf("\n");
 
+    //testing songcmp (helper function)
+    printHeader("Testing songcom (helper function");
+    printf("\n");
+    int songCmpCounter;
+    for (songCmpCounter = 0; songCmpCounter < 4; songCmpCounter++)
+    {
+        struct song *rand1 = get_random_node(songList);
+        struct song *rand2 = get_random_node(songList);
+
+        printf("comparing ");
+        printSong(rand1);
+        printf(" to ");
+        printSong(rand2);
+        printf("\n \t %d", songcmp(rand1, rand2));
+    }
+
     // //testing removing node
     printHeader("Testing removing node");
     songList = remove_node(songList, findNode->artist, findNode->name, NULL); //removing test node
