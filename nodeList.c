@@ -192,7 +192,23 @@ struct song *get_random_node(struct song *songList)
     return songList;
 }
 
-void print_artist(char *artist){
-  printf("looking for [%s]", artist);
-  
+void find_artist(struct song *songList, char *artist)
+{
+    printf("looking for [%s]", artist);
+
+    //check if artist exists
+    if (!find_node(songList, artist, NULL, NULL))
+    {
+        printf("\t artist not found ");
+        return;
+    }
+
+    while (songList)
+    {
+        if (strcmp(songList->artist, artist) == 0)
+        {
+            printSong(songList);
+        }
+        songList = songList->nextSong;
+    }
 }

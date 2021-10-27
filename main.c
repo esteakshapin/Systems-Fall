@@ -127,6 +127,15 @@ int main()
         printf("\n \t %d \n", songcmp(rand1, rand2));
     }
 
+    //testing finding artist
+    printHeader("Testing find_artist");
+    printf("\n");
+    find_artist(get_random_node()->artist);
+
+    //should not find an artist
+    printf("\n");
+    find_artist("Barak Obama");
+
     // //testing removing node
     printHeader("Testing removing node");
     songList = remove_node(songList, findNode->artist, findNode->name, NULL); //removing test node

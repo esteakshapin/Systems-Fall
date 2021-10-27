@@ -12,3 +12,5 @@ int songcmp(struct song *firstSong, struct song *secondSong);
 struct song *find_node(struct song *songList, char *artist, char *name, struct song *nextSong);
 
 struct song *get_random_node(struct song *songList);
+
+void find_artist(struct song *songList, char *artist);
