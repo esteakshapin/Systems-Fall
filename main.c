@@ -124,7 +124,7 @@ int main()
         printSong(rand1);
         printf(" to ");
         printSong(rand2);
-        printf("\n \t %d", songcmp(rand1, rand2));
+        printf("\n \t %d \n", songcmp(rand1, rand2));
     }
 
     // //testing removing node

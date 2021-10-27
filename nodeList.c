@@ -191,3 +191,8 @@ struct song *get_random_node(struct song *songList)
 
     return songList;
 }
+
+void print_artist(char *artist){
+  printf("looking for [%s]", artist);
+  
+}
