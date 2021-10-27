@@ -130,11 +130,11 @@ int main()
     //testing finding artist
     printHeader("Testing find_artist");
     printf("\n");
-    find_artist(get_random_node()->artist);
+    find_artist(songList, get_random_node(songList)->artist);
 
     //should not find an artist
     printf("\n");
-    find_artist("Barak Obama");
+    find_artist(songList, "Barak Obama");
 
     // //testing removing node
     printHeader("Testing removing node");
