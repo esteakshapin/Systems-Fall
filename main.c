@@ -152,7 +152,8 @@ int main()
     printHeader("MUSIC LIBRARY TEST");
 
     struct song **musicLibrary;
-    
 
-    return 0;
+    musicLibrary = malloc(27 * sizeof(struct song *));
+
+        return 0;
 }
