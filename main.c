@@ -149,5 +149,10 @@ int main()
     printf("list after free_list: \n");
     print_list(songList);
 
+    printHeader("MUSIC LIBRARY TEST");
+
+    struct song **musicLibrary;
+    
+
     return 0;
 }
