@@ -37,7 +37,7 @@ struct song *search_song(struct song **library, char *name, char *artist)
     return find_node(library[libraryIndex(artist)], artist, name, NULL);
 }
 
-void print_by_letter(struct song **library, char letter)
+void print_letter(struct song **library, char letter)
 {
     struct song *head = library[libraryIndex(letter)];
 
