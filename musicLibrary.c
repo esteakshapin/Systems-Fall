@@ -37,40 +37,17 @@ struct song *search_song(struct song **library, char *name, char *artist)
     return find_node(library[libraryIndex(artist)], artist, name, NULL);
 }
 
-struct song *search_artist(struct song **library, char artist[100])
-{
-    char index = libraryIndex(artist);
-    return find_artist(library[index], artist);
-}
-
 void print_by_letter(struct song **library, char letter)
 {
-    if (letter < 97)
-    {
-        letter += 32;
-    }
-
-    if (letter >= 97 && letter <= 122)
-    {
-        letter -= 97;
-    }
-    struct song *head = library[letter];
+    struct song *head = library[libraryIndex(letter)];
 
     print_list(head);
 }
 
-void print_by_artist(struct song **library, char artist[100])
+void print_by_artist(struct song **library, char *artist)
 {
-    printf("Printing [%s]: ", artist);
-    struct song *head = search_artist(library, artist);
-    printf("[ ");
-    while (head && strcmp(head->artist, artist) == 0)
-    {
-        print_node(head);
-        printf(" ");
-        head++;
-    }
-    printf("]\n");
+    char index = libraryIndex(artist);
+    find_artist(library[index], artist);
 }
 
 void print_library(struct song **library)

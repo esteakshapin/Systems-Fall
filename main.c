@@ -155,5 +155,5 @@ int main()
 
     musicLibrary = malloc(27 * sizeof(struct song *));
 
-        return 0;
+    return 0;
 }
