@@ -44,7 +44,7 @@ void print_letter(struct song **library, char letter)
     print_list(head);
 }
 
-void print_by_artist(struct song **library, char *artist)
+void print_artist(struct song **library, char *artist)
 {
     char index = libraryIndex(artist);
     find_artist(library[index], artist);
