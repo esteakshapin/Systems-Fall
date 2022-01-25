@@ -1,302 +1,250 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-
-#include "song.h"
-
-#include "namegen.h"
-#include "nodeList.h"
-#include "musicLibrary.h"
-#include <ctype.h>
-
-#define NUM_OF_ARTISTS 26
-
-void printBreak()
-{
-    printf("==================================== \n \n");
-}
-
-void printTab()
-{
-    printf("\t");
-}
-
-void printHeader(char *message)
-{
-    printBreak();
-    printf("%s: \n", message);
-    printTab();
-}
-
-void testFind(struct song *songList, char *artist, char *name)
-{
-    printf("looking for [%s: %s] \n", artist, name);
-    printTab();
-
-    struct song *node = find_node(songList, artist, name, NULL);
-    if (node)
-    {
-        printf("node found! ");
-        printSong(node);
-        printf("\n");
-        return;
-    }
-
-    printf("node not found \n");
-}
-
-void testLibrarySongFind(struct song **musicLibrary, char *artist, char *name)
-{
-    printf("looking for [%s: %s] \n", artist, name);
-    printTab();
-
-    struct song *node = find_song(musicLibrary, artist, name);
-    if (node)
-    {
-        printf("node found! ");
-        printSong(node);
-        printf("\n");
-        return;
-    }
-
-    printf("node not found \n");
-}
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include "stdio.h"
+#include "stdlib.h"
 
 int main()
 {
 
-    struct song *songList = NULL;
+    int grid_cell_size = 36;
+    int grid_width = 10;
+    int grid_height = 10;
 
-    //initializing random - setting constant to get the same value for testing purposes
-    srand(2);
+    //starting positions
+    int grid_padding_left = 0;
 
-    int counter = 0;
-    struct song *temporary;
-    struct song *findNode;   // will use this node to test find_node function
-    struct song *removeNode; // will use this node to test remove_node function
+    int grid_border_left = grid_padding_left + grid_cell_size;
 
-    while (counter < 7)
+    int player_1_grid = grid_border_left + grid_cell_size;
+
+    int grid_border_right = player_1_grid + (grid_width * grid_cell_size) + 2; //+2 to account for line length
+
+    int grid_padding_middle = grid_border_right + grid_cell_size;
+
+    int grid_border2_left = grid_padding_middle + grid_cell_size;
+
+    int player_2_grid = grid_border2_left + (grid_cell_size);
+
+    int grid_border2_right = player_2_grid + (grid_width * grid_cell_size) + 2;
+
+    int grid_padding_right = grid_border2_right + grid_cell_size;
+
+    // + 1 so that the last grid lines fit in the screen.
+    int window_width = (grid_cell_size * 2) + (grid_width * grid_cell_size + 2) + (grid_cell_size * 3) + (grid_width * grid_cell_size + 2) + (grid_cell_size * 2);
+    int window_height = (grid_height * grid_cell_size) + (grid_cell_size * 2) + 1;
+
+    // Place the grid cursor in the middle of the screen.
+    SDL_Rect grid_cursor = {
+        .x = (grid_width - 1) / 2 * grid_cell_size,
+        .y = (grid_height - 1) / 2 * grid_cell_size,
+        .w = grid_cell_size,
+        .h = grid_cell_size,
+    };
+
+    // The cursor ghost is a cursor that always shows in the cell below the
+    // mouse cursor.
+    SDL_Rect grid_cursor_ghost = {grid_cursor.x, grid_cursor.y, grid_cell_size,
+                                  grid_cell_size};
+
+    // Dark theme.
+    SDL_Color grid_background = {22, 22, 22, 255}; // Barely Black
+    SDL_Color grid_line_color = {44, 44, 44, 255}; // Dark grey
+    SDL_Color grid_cursor_ghost_color = {44, 44, 44, 255};
+    SDL_Color grid_cursor_color = {255, 255, 255, 255}; // White
+    SDL_Color grid_border_color = {173, 216, 230, 255}; //light blue
+
+    // retutns zero on success else non-zero
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        // get a random artist and generate up to 4 random songs for said artist
-        char *artist = NameGen();
-        int i;
-        int number_of_songs = (rand() % 4);
-        for (i = 0; i < number_of_songs; i++)
-        {
-            temporary = createSong(NameGen(), artist);
-            //adding songs to list
-            songList = insert_in_order(songList, temporary);
-        }
-
-        if (counter == 3)
-        {
-            findNode = temporary;
-        }
-
-        if (counter == 5)
-        {
-            removeNode = temporary;
-        }
-
-        counter++;
+        printf("error initializing SDL: %s\n", SDL_GetError());
+        return 1;
     }
 
-    //printing Songs
-    printf("LINKED LIST TESTS \n");
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 
-    printHeader("Testing print_list");
-    print_list(songList);
-
-    //printing single node
-    printHeader("Testing print_node");
-    printSong(songList);
-    printf("\n");
-
-    //finding node
-    printHeader("Testing find_node");
-    testFind(songList, findNode->artist, findNode->name);
-    printf("\n");
-    printTab();
-    testFind(songList, "dasdasd", "dasdasd"); //should return not found
-
-    printHeader("Testing finding first song by author");
-    testFind(songList, findNode->artist, NULL);
-
-    printHeader("Testing random node");
-    int i;
-    for (i = 0; i < 4; i++)
+    if (SDL_CreateWindowAndRenderer(window_width, window_height, 0, &window,
+                                    &renderer) < 0)
     {
-        printSong(get_random_node(songList));
-        printf("\n\t");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Create window and renderer: %s", SDL_GetError());
+        return EXIT_FAILURE;
     }
 
-    printf("\n");
+    SDL_SetWindowTitle(window, "Battle Ship");
 
-    //testing songcmp (helper function)
-    printHeader("Testing songcom (helper function");
-    printf("\n");
-    int songCmpCounter;
-    for (songCmpCounter = 0; songCmpCounter < 4; songCmpCounter++)
+    SDL_bool quit = SDL_FALSE;
+    SDL_bool mouse_active = SDL_FALSE;
+    SDL_bool mouse_hover = SDL_FALSE;
+
+    //font
+    TTF_Init();
+    TTF_Font *Sans = TTF_OpenFont("static/OpenSans/OpenSans-Light.ttf", 24);
+
+    // as TTF_RenderText_Solid could only be used on
+    // SDL_Surface then you have to create the surface first
+    SDL_Texture *letters[grid_width];
+
+    SDL_Texture *numbers[grid_height];
+
+    //creating letter textures
+    for (int l = 0; l < grid_width; l++)
     {
-        struct song *rand1 = get_random_node(songList);
-        struct song *rand2 = get_random_node(songList);
-
-        printf("comparing ");
-        printSong(rand1);
-        printf(" to ");
-        printSong(rand2);
-        printf("\n \t %d \n", songcmp(rand1, rand2));
+        char temp = (char)(l + 65);
+        SDL_Surface *temp_surface = TTF_RenderText_Solid(Sans, &temp, grid_cursor_color);
+        letters[l] = SDL_CreateTextureFromSurface(renderer, temp_surface);
     }
 
-    //testing finding artist
-    printHeader("Testing find_artist");
-    printf("\n");
-    find_artist(songList, get_random_node(songList)->artist);
-
-    //should not find an artist
-    printf("\n");
-    find_artist(songList, "Barak Obama");
-
-    // //testing removing node
-    printHeader("Testing removing node");
-    songList = remove_node(songList, findNode->artist, findNode->name, NULL); //removing test node
-
-    printTab();
-    songList = remove_node(songList, "adasd", "Asdasd", NULL); //should not remove anything
-
-    // //testing free list
-    printHeader("Testing free_list");
-    songList = free_list(songList);
-    printf("list after free_list: \n");
-    print_list(songList);
-
-    //music library
-    printHeader("MUSIC LIBRARY TEST");
-    printf("\n");
-
-    //creating music library
-    struct song **musicLibrary;
-    musicLibrary = createMusicLibrary();
-
-    //testing print letter (empty)
-    printHeader("Testing print_letter");
-    print_letter(musicLibrary, "a");
-
-    printHeader("Testing print_library");
-    print_library(musicLibrary);
-    printf("\n");
-
-    // artists for find artist
-    char *testArtist;
-    struct song *testSong;
-    //adding songs
-    counter = 0;
-    while (counter < NUM_OF_ARTISTS)
+    //creating number textures
+    for (int l = 0; l < grid_height; l++)
     {
+        char temp = l + '0';
+        SDL_Surface *temp_surface = TTF_RenderText_Solid(Sans, &temp, grid_cursor_color);
+        numbers[l] = SDL_CreateTextureFromSurface(renderer, temp_surface);
+    }
 
-        char letter = toupper(counter + 97);
-        char *letterPointer = &letter;
+    // now you can convert it into a texture
+    // SDL_Texture *message_A = SDL_CreateTextureFromSurface(renderer, letter_A);
 
-        int c = 0;
-        int number_of_artists = (rand() % 4);
-        for (c = 0; c < number_of_artists; c++)
+    SDL_Rect Message_rect;               //create a rect
+    Message_rect.x = 0;                  //controls the rect's x coordinate
+    Message_rect.y = 0;                  // controls the rect's y coordinte
+    Message_rect.w = grid_cell_size / 2; // controls the width of the rect
+    Message_rect.h = grid_cell_size;     // controls the height of the rect
+
+    while (!quit)
+    {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
         {
-            // get a random artist and generate up to 4 random songs for said artist
-            char *randomArtist = NameGen();
-            char artistName[25];
-
-            strcpy(artistName, letterPointer);
-            //for some reason, some letters are not copied onto the string
-            switch (letter)
+            switch (event.type)
             {
-            case 73:
-                strcpy(artistName, "I");
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_w:
+                case SDLK_UP:
+                    grid_cursor.y -= grid_cell_size;
+                    break;
+                case SDLK_s:
+                case SDLK_DOWN:
+                    grid_cursor.y += grid_cell_size;
+                    break;
+                case SDLK_a:
+                case SDLK_LEFT:
+                    grid_cursor.x -= grid_cell_size;
+                    break;
+                case SDLK_d:
+                case SDLK_RIGHT:
+                    grid_cursor.x += grid_cell_size;
+                    break;
+                }
                 break;
-            case 74:
-                strcpy(artistName, "J");
+            case SDL_MOUSEBUTTONDOWN:
+                grid_cursor.x = (event.motion.x / grid_cell_size) * grid_cell_size;
+                grid_cursor.y = (event.motion.y / grid_cell_size) * grid_cell_size;
                 break;
-            case 75:
-                strcpy(artistName, "K");
-                break;
-            case 76:
-                strcpy(artistName, "L");
-                break;
-            case 77:
-                strcpy(artistName, "M");
-                break;
-            case 78:
-                strcpy(artistName, "N");
-                break;
+            case SDL_MOUSEMOTION:
+                grid_cursor_ghost.x = (event.motion.x / grid_cell_size) * grid_cell_size;
+                grid_cursor_ghost.y = (event.motion.y / grid_cell_size) * grid_cell_size;
 
-            default:
+                if (!mouse_active)
+                    mouse_active = SDL_TRUE;
                 break;
-            }
-            strcat(artistName, ". ");
-            strcat(artistName, randomArtist);
-
-            int i;
-            int number_of_songs = (rand() % 4);
-            // printf("artist: %s \t number of songs: %d \n", artistName, number_of_songs); testing
-            for (i = 0; i < number_of_songs; i++)
-            {
-                temporary = createSong(NameGen(), artistName);
-                //adding songs to list
-                addSongToLibrary(musicLibrary, temporary);
-                // printf("\t artist: %s \t song: %s \n", temporary->artist, temporary->name);
-            }
-
-            if (counter == (NUM_OF_ARTISTS / 2))
-            {
-                testSong = temporary;
-            }
-
-            if (counter == NUM_OF_ARTISTS - 1)
-            {
-                testArtist = artistName;
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_ENTER && !mouse_hover)
+                    mouse_hover = SDL_TRUE;
+                else if (event.window.event == SDL_WINDOWEVENT_LEAVE && mouse_hover)
+                    mouse_hover = SDL_FALSE;
+                break;
+            case SDL_QUIT:
+                quit = SDL_TRUE;
+                break;
             }
         }
 
-        counter++;
+        // Draw grid background.
+        SDL_SetRenderDrawColor(renderer, grid_background.r, grid_background.g,
+                               grid_background.b, grid_background.a);
+        SDL_RenderClear(renderer);
+
+        // Draw player 1 grid lines.
+        SDL_SetRenderDrawColor(renderer, grid_line_color.r, grid_line_color.g,
+                               grid_line_color.b, grid_line_color.a);
+
+        for (int x = player_1_grid; x < 1 + player_1_grid + grid_width * grid_cell_size;
+             x += grid_cell_size)
+        {
+            SDL_RenderDrawLine(renderer, x, grid_cell_size, x, grid_cell_size + grid_cell_size * grid_height);
+        }
+
+        for (int y = grid_cell_size; y < 1 + grid_height * grid_cell_size + grid_cell_size;
+             y += grid_cell_size)
+        {
+            SDL_RenderDrawLine(renderer, player_1_grid, y, player_1_grid + grid_cell_size * grid_width, y);
+        }
+
+        // Draw player 2 grid lines.
+        for (int x = player_2_grid; x < 1 + player_2_grid + grid_width * grid_cell_size;
+             x += grid_cell_size)
+        {
+            SDL_RenderDrawLine(renderer, x, grid_cell_size, x, grid_cell_size + grid_cell_size * grid_height);
+        }
+
+        for (int y = grid_cell_size; y < 1 + grid_height * grid_cell_size + grid_cell_size;
+             y += grid_cell_size)
+        {
+            SDL_RenderDrawLine(renderer, player_2_grid, y, player_2_grid + grid_cell_size * grid_width, y);
+        }
+
+        for (int x = 0; x < grid_width; x++)
+        {
+            //draw grid 1 letters
+            Message_rect.x = (x * grid_cell_size) + player_1_grid + grid_cell_size / 4;
+            Message_rect.y = 0;
+            SDL_RenderCopy(renderer, letters[x], NULL, &Message_rect);
+
+            //draw grid 2 letters
+            Message_rect.x = (x * grid_cell_size) + player_2_grid + grid_cell_size / 4;
+            Message_rect.y = 0;
+            SDL_RenderCopy(renderer, letters[x], NULL, &Message_rect);
+        }
+
+        for (int y = 0; y < grid_height; y++)
+        {
+            //draw grid 1 numbers
+            Message_rect.x = grid_border_left;
+            Message_rect.y = (y * grid_cell_size) + grid_cell_size + grid_cell_size / 4;
+            SDL_RenderCopy(renderer, numbers[y], NULL, &Message_rect);
+
+            //draw grid 2 numbers
+            Message_rect.x = grid_border2_left;
+            Message_rect.y = (y * grid_cell_size) + grid_cell_size + grid_cell_size / 4;
+            SDL_RenderCopy(renderer, numbers[y], NULL, &Message_rect);
+        }
+
+        // Draw grid ghost cursor.
+        if (mouse_active && mouse_hover)
+        {
+            SDL_SetRenderDrawColor(renderer, grid_cursor_ghost_color.r,
+                                   grid_cursor_ghost_color.g,
+                                   grid_cursor_ghost_color.b,
+                                   grid_cursor_ghost_color.a);
+            SDL_RenderFillRect(renderer, &grid_cursor_ghost);
+        }
+
+        // Draw grid cursor.
+        SDL_SetRenderDrawColor(renderer, grid_cursor_color.r,
+                               grid_cursor_color.g, grid_cursor_color.b,
+                               grid_cursor_color.a);
+        SDL_RenderFillRect(renderer, &grid_cursor);
+
+        SDL_RenderPresent(renderer);
     }
-    printHeader("Testing print letter");
-    print_letter(musicLibrary, "C");
-    printHeader("Testing print_library");
-    printf("\n");
-    print_library(musicLibrary);
 
-    printHeader("Testing find:");
-    testLibrarySongFind(musicLibrary, testSong->artist, testSong->name); //should be found
-    testLibrarySongFind(musicLibrary, "adsad", "Adasd");
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
-    printHeader("Testing find artist");
-    print_artist(musicLibrary, testArtist);
-
-    printHeader("Testing Remove Song");
-    remove_song(musicLibrary, testSong);
-
-    printHeader("Testing clear_list");
-    clear_library(musicLibrary);
-
-    printHeader("Library after clear");
-    print_library(musicLibrary);
-    printf("\n");
-
-    //adding songs to empty list
-    addSongToLibrary(musicLibrary, createSong("thunderstruck", "ac/dc"));
-    addSongToLibrary(musicLibrary, createSong("alive", "pearl jam"));
-    addSongToLibrary(musicLibrary, createSong("even flow", "pearl jam"));
-    addSongToLibrary(musicLibrary, createSong("yellow ledbetter", "pearl jam"));
-    addSongToLibrary(musicLibrary, createSong("time", "pink floyd"));
-
-    print_library(musicLibrary);
-
-    printHeader("Testing print_artist");
-    print_artist(musicLibrary, "pearl jam");
-    printf("\n");
-    print_artist(musicLibrary, "ac/dc");
-
-    printHeader("Testing Shuffle");
-    shuffle(musicLibrary);
     return 0;
 }
